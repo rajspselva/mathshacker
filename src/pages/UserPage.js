@@ -1,9 +1,10 @@
 import { Helmet } from 'react-helmet-async';
 import { filter } from 'lodash';
 import { sentenceCase } from 'change-case';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 // @mui
 import {
+  Grid,
   Card,
   Table,
   Stack,
@@ -21,6 +22,7 @@ import {
   IconButton,
   TableContainer,
   TablePagination,
+  TextField,
 } from '@mui/material';
 // components
 import Label from '../components/label';
@@ -74,19 +76,43 @@ function applySortFilter(array, comparator, query) {
 }
 
 export default function UserPage() {
+  
   const [open, setOpen] = useState(null);
-
   const [page, setPage] = useState(0);
-
   const [order, setOrder] = useState('asc');
-
   const [selected, setSelected] = useState([]);
-
   const [orderBy, setOrderBy] = useState('name');
-
   const [filterName, setFilterName] = useState('');
-
   const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [answer, setAnswer] = useState(0)
+  const [number1, setNumber1] = useState(0)
+  const [number2, setNumber2] = useState(1)
+
+  const getRandomNumber = (min, max) => Math.floor(Math.random() * (max - min) + min);
+
+  const handleAnswerChange = (event) => {
+    const regex = /^[0-9\b]+$/;
+    if (event.target.value === '' || regex.test(event.target.value)) {
+      setAnswer(event.target.value);
+    }
+  };
+  const restNumbers = () => {
+    setNumber1(getRandomNumber(0, 9));
+    setNumber2(getRandomNumber(0, 9));
+  };
+  const handleSubmit = () => {
+    const expected = number1 + number2;
+    const actual = parseInt(answer, 10);
+    if (expected === actual) {
+      console.log('Correct answer');
+    }
+    restNumbers();
+    setAnswer('');
+  };
+
+  useEffect(() => {
+    restNumbers();
+  }, []);
 
   const handleOpenMenu = (event) => {
     setOpen(event.currentTarget);
@@ -155,15 +181,44 @@ export default function UserPage() {
       <Container>
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
           <Typography variant="h4" gutterBottom>
-            User
+            Additions
           </Typography>
-          <Button variant="contained" startIcon={<Iconify icon="eva:plus-fill" />}>
-            New User
-          </Button>
         </Stack>
-
         <Card>
-          <UserListToolbar numSelected={selected.length} filterName={filterName} onFilterName={handleFilterByName} />
+          <Grid container padding={3}>
+            <Grid item md={2} paddingTop={1}>
+              <Typography variant="h4" gutterBottom>
+                {number1}
+              </Typography>
+            </Grid>
+            <Grid item md={2} paddingTop={1}>
+              <Typography variant="h4" gutterBottom>
+                +
+              </Typography>
+            </Grid>
+            <Grid item md={2} paddingTop={1}>
+              <Typography variant="h4" gutterBottom>
+                {number2}
+              </Typography>
+            </Grid>
+            <Grid item md={2} paddingTop={1}>
+              <Typography variant="h4" gutterBottom>
+                =
+              </Typography>
+            </Grid>
+            <Grid item md={3}>
+              <TextField type="number" variant="outlined" label="Answer" onChange={handleAnswerChange} />
+            </Grid>
+            <Grid item md={1} paddingTop={1}>
+              <Button variant="contained" onClick={handleSubmit}>
+                Submit
+              </Button>
+            </Grid>
+          </Grid>
+        </Card>
+
+        <Card style={{ marginTop: 50 }}>
+          {/* <UserListToolbar numSelected={selected.length} filterName={filterName} onFilterName={handleFilterByName} /> */}
 
           <Scrollbar>
             <TableContainer sx={{ minWidth: 800 }}>
