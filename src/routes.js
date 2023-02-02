@@ -3,12 +3,11 @@ import { Navigate, useRoutes } from 'react-router-dom';
 import DashboardLayout from './layouts/dashboard';
 import SimpleLayout from './layouts/simple';
 //
-import BlogPage from './pages/BlogPage';
-import UserPage from './pages/UserPage';
+import AdditionsPage from './pages/AdditionsPage';
 import LoginPage from './pages/LoginPage';
 import Page404 from './pages/Page404';
-import ProductsPage from './pages/ProductsPage';
 import DashboardAppPage from './pages/DashboardAppPage';
+import SubtractionsPage from "./pages/SubtractionsPage";
 
 // ----------------------------------------------------------------------
 
@@ -20,8 +19,8 @@ export default function Router() {
       children: [
         { element: <Navigate to="/dashboard/app" />, index: true },
         { path: 'app', element: <DashboardAppPage /> },
-        { path: 'additions', element: <UserPage /> },
-        // { path: 'products', element: <ProductsPage /> },
+        { path: 'additions', element: <AdditionsPage /> },
+        { path: 'subtractions', element: <SubtractionsPage /> },
         // { path: 'blog', element: <BlogPage /> },
       ],
     },

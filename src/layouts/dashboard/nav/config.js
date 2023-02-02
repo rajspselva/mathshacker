@@ -12,15 +12,15 @@ const navConfig = [
     icon: icon('ic_analytics'),
   },
   {
-    title: 'Addtions',
+    title: 'Additions',
     path: '/dashboard/additions',
-    icon: icon('ic_user'),
+    icon: icon('ic_lock'),
   },
-  // {
-  //   title: 'product',
-  //   path: '/dashboard/products',
-  //   icon: icon('ic_cart'),
-  // },
+  {
+    title: 'Subtractions',
+    path: '/dashboard/subtractions',
+    icon: icon('ic_lock'),
+  },
   // {
   //   title: 'blog',
   //   path: '/dashboard/blog',
