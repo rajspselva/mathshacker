@@ -3,6 +3,6 @@ import addtionsReducer from './addtions'
 
 export const store  = configureStore({
     reducer: {
-        additions: addtionsReducer
+        maths: addtionsReducer
     }
 })

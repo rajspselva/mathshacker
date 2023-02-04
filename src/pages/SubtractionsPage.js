@@ -1,6 +1,6 @@
 import { Helmet } from 'react-helmet-async';
 import { useState, useEffect } from 'react';
-import {useDispatch, useSelector} from "react-redux";
+import { useDispatch, useSelector } from 'react-redux';
 // @mui
 import {
   Grid,
@@ -26,32 +26,33 @@ import Iconify from '../components/iconify';
 import Scrollbar from '../components/scrollbar';
 // sections
 import { UserListHead } from '../sections/@dashboard/user';
-import {subtractNumbers} from "../reducers/addtions";
+import { addNumbers } from '../reducers/addtions';
 
 // ----------------------------------------------------------------------
 const TABLE_HEAD = [
-  { id: 'slno', label: 'Sl.No', alignRight: false },
-  { id: 'number1', label: 'First Number', alignRight: false },
-  { id: 'number2', label: 'Second Number', alignRight: false },
-  { id: 'yourAnswer', label: 'Your Answer', alignRight: false },
+  { id: 'number1', label: 'Number 1', alignRight: false },
+  { id: 'operation', label: 'Operation', alignRight: false },
+  { id: 'number2', label: 'Number 2', alignRight: false },
   { id: 'correctAnswer', label: 'Correct Answer', alignRight: false },
+  { id: 'yourAnswer', label: 'Your Answer', alignRight: false },
   { id: 'result', label: 'Result', alignRight: false },
   { id: '' },
 ];
 
 export default function SubtractionsPage() {
-  
   const [open, setOpen] = useState(null);
-  const [page, setPage] = useState(0);
+  const [totalQuestions] = useState(100);
+  const [correctPage, setCorrectPage] = useState(0);
+  const [incorrectPage, setIncorrectPage] = useState(0);
   const [order, setOrder] = useState('asc');
   const [orderBy, setOrderBy] = useState('name');
   const [rowsPerPage, setRowsPerPage] = useState(5);
-  const [answer, setAnswer] = useState("")
-  const [number1, setNumber1] = useState(0)
-  const [number2, setNumber2] = useState(1)
-  const [validAnswer, setValidAnswer] = useState(true)
+  const [answer, setAnswer] = useState('');
+  const [number1, setNumber1] = useState(0);
+  const [number2, setNumber2] = useState(1);
+  const [validAnswer, setValidAnswer] = useState(true);
   const dispatch = useDispatch();
-  const {subtractions} = useSelector((state) => state.additions)
+  const { subtractions } = useSelector((state) => state.maths);
 
   const getRandomNumber = (min, max) => Math.floor(Math.random() * (max - min) + min);
 
@@ -59,41 +60,42 @@ export default function SubtractionsPage() {
     const regex = /^[0-9\b]+$/;
     if (event.target.value === '' || regex.test(event.target.value)) {
       setAnswer(event.target.value);
-      setValidAnswer(true)
+      setValidAnswer(true);
     }
   };
 
   const restNumbers = () => {
-    setNumber1(getRandomNumber(0, 9));
-    let temp = getRandomNumber(0, 9)
-    while(temp > number1) {
-      temp = getRandomNumber(0, 9);
+    const n1 = getRandomNumber(1, 9);
+    const n2 = getRandomNumber(1, 9);
+    const filter = subtractions.filter((f) => f.number1 === n1 && f.number2 === n2);
+    if (n2 > n1 || filter.length > 0) {
+      restNumbers();
+      return;
     }
-    setNumber2(temp);
+    setNumber1(n1);
+    setNumber2(n2);
   };
 
   const handleSubmit = () => {
-    if (answer !== "") {
-      dispatch(subtractNumbers({
-        number1,
-        number2,
-        answer
-      }))
+    if (answer !== '') {
+      dispatch(
+        addNumbers({
+          number1,
+          number2,
+          answer,
+        })
+      );
       restNumbers();
-      setAnswer("");
+      setAnswer('');
     } else {
-      setValidAnswer(false)
+      setValidAnswer(false);
     }
-  }
+  };
 
   useEffect(() => {
     restNumbers();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  useEffect(() => {
-    console.log("subtractions", subtractions)
-  }, [subtractions])
 
   const handleOpenMenu = (event) => {
     setOpen(event.currentTarget);
@@ -109,22 +111,38 @@ export default function SubtractionsPage() {
     setOrderBy(property);
   };
 
-  const handleChangePage = (event, newPage) => {
-    setPage(newPage);
+  const handleChangeIncorrectPage = (event, newPage) => {
+    setIncorrectPage(newPage);
   };
 
-  const handleChangeRowsPerPage = (event) => {
-    setPage(0);
+  const handleChangeCorrectPage = (event, newPage) => {
+    setCorrectPage(newPage);
+  };
+
+  const handleChangeRowsPerCorrectPage = (event) => {
+    setCorrectPage(0);
+    setRowsPerPage(parseInt(event.target.value, 10));
+  };
+
+  const handleChangeRowsPerIncorrectPage = (event) => {
+    setIncorrectPage(0);
     setRowsPerPage(parseInt(event.target.value, 10));
   };
 
   const onKeyPress = (e) => {
-    if(e.keyCode === 13){
-      handleSubmit()
+    if (e.keyCode === 13) {
+      handleSubmit();
     }
-  }
+  };
 
-  const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - subtractions.length) : 0;
+  const emptyCorrectRows =
+    correctPage > 0
+      ? Math.max(0, (1 + correctPage) * rowsPerPage - subtractions.filter((f) => f.result === true).length)
+      : 0;
+  const emptyIncorrectRows =
+    incorrectPage > 0
+      ? Math.max(0, (1 + incorrectPage) * rowsPerPage - subtractions.filter((f) => f.result === false).length)
+      : 0;
 
   return (
     <>
@@ -135,16 +153,26 @@ export default function SubtractionsPage() {
       <Container>
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
           <Typography variant="h4" gutterBottom>
-            Additions
+            Subtractions
           </Typography>
-          <Typography variant="h4" gutterBottom>
-            Remaining: {100 - subtractions.length}
+        </Stack>
+        <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
+          <Typography variant="h6" gutterBottom>
+            Total Questions: {totalQuestions}
           </Typography>
-          <Typography variant="h4" gutterBottom>
+          <Typography variant="h6" gutterBottom>
+            Remaining: {totalQuestions - subtractions.length}
+          </Typography>
+          <Typography variant="h6" gutterBottom>
             Correct Anwser: {subtractions.filter((f) => f.result === true).length}
           </Typography>
-          <Typography variant="h4" gutterBottom>
-            Accuracy: {(subtractions.length !== 0 ? subtractions.filter((f) => f.result === true).length / subtractions.length * 100 : 0).toFixed(2)}%
+          <Typography variant="h6" gutterBottom>
+            Accuracy:{' '}
+            {(subtractions.length !== 0
+              ? (subtractions.filter((f) => f.result === true).length / subtractions.length) * totalQuestions
+              : 0
+            ).toFixed(2)}
+            %
           </Typography>
         </Stack>
         <Card>
@@ -170,18 +198,20 @@ export default function SubtractionsPage() {
               </Typography>
             </Grid>
             <Grid item md={3}>
-              <TextField error={!validAnswer}
-                         inputRef={input => input && input.focus()}
-                         onKeyDown={onKeyPress}
-                         label="Answer"
-                         helperText={!validAnswer ? "Please enter answer." : ""}
-                         value={answer}
-                         type="number"
-                         variant="outlined"
-                         onChange={handleAnswerChange} />
+              <TextField
+                error={!validAnswer}
+                inputRef={(input) => input && input.focus()}
+                label="Answer"
+                helperText={!validAnswer ? 'Please enter answer.' : ''}
+                value={answer}
+                type="number"
+                onKeyDown={onKeyPress}
+                variant="outlined"
+                onChange={handleAnswerChange}
+              />
             </Grid>
             <Grid item md={1} paddingTop={1}>
-              <Button variant="contained" onClick={handleSubmit}>
+              <Button type="submit" variant="contained" onClick={handleSubmit}>
                 Submit
               </Button>
             </Grid>
@@ -196,31 +226,41 @@ export default function SubtractionsPage() {
                   order={order}
                   orderBy={orderBy}
                   headLabel={TABLE_HEAD}
-                  rowCount={subtractions.length}
-                  onRequestSort={handleRequestSort}/>
+                  rowCount={subtractions.filter((f) => f.result === false).length}
+                  onRequestSort={handleRequestSort}
+                />
                 <TableBody>
-                  {subtractions.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => {
-                    const { number1, number2, correctAnswer, yourAnswer, result } = row;
-                    return (
-                      <TableRow key={`additon-table-row-${index}`}>
-                        <TableCell align="left">{index + 1}</TableCell>
-                        <TableCell align="left">{number1}</TableCell>
-                        <TableCell align="left">{number2}</TableCell>
-                        <TableCell align="left">{yourAnswer}</TableCell>
-                        <TableCell align="left">{correctAnswer}</TableCell>
-                        <TableCell align="left">
-                          <Label color={(result?'success':'error') || 'success'}>{result ? "Correct": "Incorrect"}</Label>
-                        </TableCell>
-                        <TableCell align="right">
-                          <IconButton size="large" color="inherit" onClick={handleOpenMenu}>
-                            <Iconify icon={'eva:more-vertical-fill'} />
-                          </IconButton>
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })}
-                  {emptyRows > 0 && (
-                    <TableRow style={{ height: 53 * emptyRows }}>
+                  {subtractions
+                    .filter((f) => f.result === false)
+                    .slice(incorrectPage * rowsPerPage, incorrectPage * rowsPerPage + rowsPerPage)
+                    .map((row, index) => {
+                      const { number1, number2, correctAnswer, yourAnswer, result } = row;
+                      return (
+                        <TableRow key={`additon-table-row-${index}`}>
+                          <TableCell align="left">{number1}</TableCell>
+                          <TableCell align="left">-</TableCell>
+                          <TableCell align="left">{number2}</TableCell>
+                          <TableCell align="left">
+                            <Label color="success">{correctAnswer}</Label>
+                          </TableCell>
+                          <TableCell align="left">
+                            <Label color="error">{yourAnswer}</Label>
+                          </TableCell>
+                          <TableCell align="left">
+                            <Label color={(result ? 'success' : 'error') || 'success'}>
+                              {result ? 'Correct' : 'Incorrect'}
+                            </Label>
+                          </TableCell>
+                          <TableCell align="right">
+                            <IconButton size="large" color="inherit" onClick={handleOpenMenu}>
+                              <Iconify icon={'eva:more-vertical-fill'} />
+                            </IconButton>
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
+                  {emptyIncorrectRows > 0 && (
+                    <TableRow style={{ height: 53 * emptyIncorrectRows }}>
                       <TableCell colSpan={6} />
                     </TableRow>
                   )}
@@ -232,11 +272,73 @@ export default function SubtractionsPage() {
           <TablePagination
             rowsPerPageOptions={[5, 10, 25]}
             component="div"
-            count={subtractions.length}
+            count={subtractions.filter((f) => f.result === false).length}
             rowsPerPage={rowsPerPage}
-            page={page}
-            onPageChange={handleChangePage}
-            onRowsPerPageChange={handleChangeRowsPerPage}
+            page={incorrectPage}
+            onPageChange={handleChangeIncorrectPage}
+            onRowsPerPageChange={handleChangeRowsPerIncorrectPage}
+          />
+        </Card>
+
+        <Card style={{ marginTop: 50 }}>
+          <Scrollbar>
+            <TableContainer sx={{ minWidth: 800 }}>
+              <Table>
+                <UserListHead
+                  order={order}
+                  orderBy={orderBy}
+                  headLabel={TABLE_HEAD}
+                  rowCount={subtractions.filter((f) => f.result === true).length}
+                  onRequestSort={handleRequestSort}
+                />
+                <TableBody>
+                  {subtractions
+                    .filter((f) => f.result === true)
+                    .slice(correctPage * rowsPerPage, correctPage * rowsPerPage + rowsPerPage)
+                    .map((row, index) => {
+                      const { number1, number2, correctAnswer, yourAnswer, result } = row;
+                      return (
+                        <TableRow key={`additon-table-row-${index}`}>
+                          <TableCell align="left">{number1}</TableCell>
+                          <TableCell align="left">-</TableCell>
+                          <TableCell align="left">{number2}</TableCell>
+                          <TableCell align="left">
+                            <Label color="success">{correctAnswer}</Label>
+                          </TableCell>
+                          <TableCell align="left">
+                            <Label color="success">{yourAnswer}</Label>
+                          </TableCell>
+                          <TableCell align="left">
+                            <Label color={(result ? 'success' : 'error') || 'success'}>
+                              {result ? 'Correct' : 'Incorrect'}
+                            </Label>
+                          </TableCell>
+                          <TableCell align="right">
+                            <IconButton size="large" color="inherit" onClick={handleOpenMenu}>
+                              <Iconify icon={'eva:more-vertical-fill'} />
+                            </IconButton>
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
+                  {emptyCorrectRows > 0 && (
+                    <TableRow style={{ height: 53 * emptyCorrectRows }}>
+                      <TableCell colSpan={6} />
+                    </TableRow>
+                  )}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </Scrollbar>
+
+          <TablePagination
+            rowsPerPageOptions={[5, 10, 25]}
+            component="div"
+            count={subtractions.filter((f) => f.result === true).length}
+            rowsPerPage={rowsPerPage}
+            page={correctPage}
+            onPageChange={handleChangeCorrectPage}
+            onRowsPerPageChange={handleChangeRowsPerCorrectPage}
           />
         </Card>
       </Container>
