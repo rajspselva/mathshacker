@@ -15,6 +15,7 @@ import {
 // sections
 import {subtractNumbers} from '../reducers/addtions';
 import MathsTableView from "../components/math-table-view";
+import Timer from "../components/timer";
 
 export default function SubtractionsPage() {
     const [totalQuestions] = useState(100);
@@ -102,6 +103,9 @@ export default function SubtractionsPage() {
                                 : 0
                         ).toFixed(2)}
                         %
+                    </Typography>
+                    <Typography variant="h6" gutterBottom>
+                        <Timer/>
                     </Typography>
                 </Stack>
                 <Card>

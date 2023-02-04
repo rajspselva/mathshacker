@@ -18,6 +18,7 @@ import Iconify from '../components/iconify';
 // sections
 import {addNumbers} from "../reducers/addtions";
 import MathsTableView from "../components/math-table-view";
+import Timer from "../components/timer";
 
 export default function AdditionsPage() {
   
@@ -111,6 +112,9 @@ export default function AdditionsPage() {
               : 0
             ).toFixed(2)}
             %
+          </Typography>
+          <Typography variant="h6" gutterBottom>
+            <Timer/>
           </Typography>
         </Stack>
         <Card>
