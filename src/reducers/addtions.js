@@ -8,7 +8,6 @@ const additionsSlice = createSlice({
   },
   reducers: {
     addNumbers: (state, action) => {
-      console.log('i am here');
       const expected = action.payload.number1 + action.payload.number2;
       const actual = parseInt(action.payload.answer, 10);
       state.additions.unshift({

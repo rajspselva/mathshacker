@@ -5,49 +5,24 @@ import {useDispatch, useSelector} from "react-redux";
 import {
   Grid,
   Card,
-  Table,
   Stack,
   Button,
   Popover,
-  TableRow,
   MenuItem,
-  TableBody,
-  TableCell,
   Container,
   Typography,
-  IconButton,
-  TableContainer,
-  TablePagination,
   TextField,
 } from '@mui/material';
 // components
-import Label from '../components/label';
 import Iconify from '../components/iconify';
-import Scrollbar from '../components/scrollbar';
 // sections
-import { UserListHead } from '../sections/@dashboard/user';
 import {addNumbers} from "../reducers/addtions";
-
-// ----------------------------------------------------------------------
-const TABLE_HEAD = [
-  { id: 'number1', label: 'Number 1', alignRight: false },
-  { id: 'operation', label: 'Operation', alignRight: false },
-  { id: 'number2', label: 'Number 2', alignRight: false },
-  { id: 'correctAnswer', label: 'Correct Answer', alignRight: false },
-  { id: 'yourAnswer', label: 'Your Answer', alignRight: false },
-  { id: 'result', label: 'Result', alignRight: false },
-  { id: '' },
-];
+import MathsTableView from "../components/math-table-view";
 
 export default function AdditionsPage() {
   
   const [open, setOpen] = useState(null);
   const [totalQuestions] = useState(100)
-  const [correctPage, setCorrectPage] = useState(0);
-  const [incorrectPage, setIncorrectPage] = useState(0);
-  const [order, setOrder] = useState('asc');
-  const [orderBy, setOrderBy] = useState('name');
-  const [rowsPerPage, setRowsPerPage] = useState(5);
   const [answer, setAnswer] = useState("")
   const [number1, setNumber1] = useState(0)
   const [number2, setNumber2] = useState(1)
@@ -97,46 +72,15 @@ export default function AdditionsPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const handleOpenMenu = (event) => {
-    setOpen(event.currentTarget);
-  };
-
   const handleCloseMenu = () => {
     setOpen(null);
   };
-
-  const handleRequestSort = (event, property) => {
-    const isAsc = orderBy === property && order === 'asc';
-    setOrder(isAsc ? 'desc' : 'asc');
-    setOrderBy(property);
-  };
-
-  const handleChangeIncorrectPage = (event, newPage) => {
-    setIncorrectPage(newPage);
-  };
-
-  const handleChangeCorrectPage = (event, newPage) => {
-    setCorrectPage(newPage);
-  };
-
-  const handleChangeRowsPerCorrectPage = (event) => {
-    setCorrectPage(0);
-    setRowsPerPage(parseInt(event.target.value, 10));
-  };
-
-   const handleChangeRowsPerIncorrectPage = (event) => {
-     setIncorrectPage(0);
-     setRowsPerPage(parseInt(event.target.value, 10));
-   };
 
   const onKeyPress = (e) => {
     if(e.keyCode === 13){
       handleSubmit()
     }
   }
-
-  const emptyCorrectRows = correctPage > 0 ? Math.max(0, (1 + correctPage) * rowsPerPage - additions.filter(f => f.result === true).length) : 0;
-  const emptyIncorrectRows = incorrectPage > 0 ? Math.max(0, (1 + incorrectPage) * rowsPerPage - additions.filter(f => f.result === false).length) : 0;
 
   return (
     <>
@@ -211,130 +155,8 @@ export default function AdditionsPage() {
             </Grid>
           </Grid>
         </Card>
-
-        <Card style={{ marginTop: 50 }}>
-          <Scrollbar>
-            <TableContainer sx={{ minWidth: 800 }}>
-              <Table>
-                <UserListHead
-                  order={order}
-                  orderBy={orderBy}
-                  headLabel={TABLE_HEAD}
-                  rowCount={additions.length}
-                  onRequestSort={handleRequestSort}
-                />
-                <TableBody>
-                  {additions
-                    .filter((f) => f.result === false)
-                    .slice(incorrectPage * rowsPerPage, incorrectPage * rowsPerPage + rowsPerPage)
-                    .map((row, index) => {
-                      const { number1, number2, correctAnswer, yourAnswer, result } = row;
-                      return (
-                        <TableRow key={`additon-table-row-${index}`}>
-                          <TableCell align="left">{number1}</TableCell>
-                          <TableCell align="left">+</TableCell>
-                          <TableCell align="left">{number2}</TableCell>
-                          <TableCell align="left">
-                            <Label color="success">{correctAnswer}</Label>
-                          </TableCell>
-                          <TableCell align="left">
-                            <Label color="error">{yourAnswer}</Label>
-                          </TableCell>
-                          <TableCell align="left">
-                            <Label color={(result ? 'success' : 'error') || 'success'}>
-                              {result ? 'Correct' : 'Incorrect'}
-                            </Label>
-                          </TableCell>
-                          <TableCell align="right">
-                            <IconButton size="large" color="inherit" onClick={handleOpenMenu}>
-                              <Iconify icon={'eva:more-vertical-fill'} />
-                            </IconButton>
-                          </TableCell>
-                        </TableRow>
-                      );
-                    })}
-                  {emptyIncorrectRows > 0 && (
-                    <TableRow style={{ height: 53 * emptyIncorrectRows }}>
-                      <TableCell colSpan={6} />
-                    </TableRow>
-                  )}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          </Scrollbar>
-
-          <TablePagination
-            rowsPerPageOptions={[5, 10, 25]}
-            component="div"
-            count={additions.filter((f) => f.result === false).length}
-            rowsPerPage={rowsPerPage}
-            page={incorrectPage}
-            onPageChange={handleChangeIncorrectPage}
-            onRowsPerPageChange={handleChangeRowsPerIncorrectPage}
-          />
-        </Card>
-
-        <Card style={{ marginTop: 50 }}>
-          <Scrollbar>
-            <TableContainer sx={{ minWidth: 800 }}>
-              <Table>
-                <UserListHead
-                  order={order}
-                  orderBy={orderBy}
-                  headLabel={TABLE_HEAD}
-                  rowCount={additions.length}
-                  onRequestSort={handleRequestSort}
-                />
-                <TableBody>
-                  {additions
-                    .filter((f) => f.result === true)
-                    .slice(correctPage * rowsPerPage, correctPage * rowsPerPage + rowsPerPage)
-                    .map((row, index) => {
-                      const { number1, number2, correctAnswer, yourAnswer, result } = row;
-                      return (
-                        <TableRow key={`additon-table-row-${index}`}>
-                          <TableCell align="left">{number1}</TableCell>
-                          <TableCell align="left">+</TableCell>
-                          <TableCell align="left">{number2}</TableCell>
-                          <TableCell align="left">
-                            <Label color="success">{correctAnswer}</Label>
-                          </TableCell>
-                          <TableCell align="left">
-                            <Label color="success">{yourAnswer}</Label>
-                          </TableCell>
-                          <TableCell align="left">
-                            <Label color={(result ? 'success' : 'error') || 'success'}>
-                              {result ? 'Correct' : 'Incorrect'}
-                            </Label>
-                          </TableCell>
-                          <TableCell align="right">
-                            <IconButton size="large" color="inherit" onClick={handleOpenMenu}>
-                              <Iconify icon={'eva:more-vertical-fill'} />
-                            </IconButton>
-                          </TableCell>
-                        </TableRow>
-                      );
-                    })}
-                  {emptyCorrectRows > 0 && (
-                    <TableRow style={{ height: 53 * emptyCorrectRows }}>
-                      <TableCell colSpan={6} />
-                    </TableRow>
-                  )}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          </Scrollbar>
-
-          <TablePagination
-            rowsPerPageOptions={[5, 10, 25]}
-            component="div"
-            count={additions.filter((f) => f.result === true).length}
-            rowsPerPage={rowsPerPage}
-            page={correctPage}
-            onPageChange={handleChangeCorrectPage}
-            onRowsPerPageChange={handleChangeRowsPerCorrectPage}
-          />
-        </Card>
+        <MathsTableView datasource={additions.filter(f => f.result === false)} operation="+"/>
+        <MathsTableView datasource={additions.filter(f => f.result === true)} operation="+"/>
       </Container>
 
       <Popover
