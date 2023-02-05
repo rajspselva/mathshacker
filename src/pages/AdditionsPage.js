@@ -12,11 +12,16 @@ import {
   Container,
   Typography,
   TextField,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
 } from '@mui/material';
 // components
 import Iconify from '../components/iconify';
 // sections
-import {addNumbers} from "../reducers/addtions";
+import { addNumbers, clearAddtionsQuestions } from '../reducers/additions';
 import MathsTableView from "../components/math-table-view";
 import Timer from "../components/timer";
 
@@ -30,6 +35,8 @@ export default function AdditionsPage() {
   const [validAnswer, setValidAnswer] = useState(true)
   const dispatch = useDispatch();
   const { additions } = useSelector((state) => state.maths);
+  const [openCompletionDialog, setOpenCompletionDialog] = useState(false)
+  const [readOnly, setReadOnly] = useState(false)
 
   const getRandomNumber = (min, max) => Math.floor(Math.random() * (max - min) + min);
 
@@ -44,12 +51,6 @@ export default function AdditionsPage() {
   const restNumbers = () => {
     const n1 = getRandomNumber(1, 9);
     const n2 = getRandomNumber(1, 9);
-    const filter = additions.filter(f => f.number1 === n1 && f.number2 === n2)
-    console.log('filter', filter);
-    if (filter.length > 0) {
-      restNumbers();
-      return;
-    }
     setNumber1(n1);
     setNumber2(n2);
   };
@@ -73,6 +74,12 @@ export default function AdditionsPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  useEffect(() => {
+    if (additions.length === totalQuestions) {
+      setOpenCompletionDialog(true)
+    }
+  }, [additions, totalQuestions])
+
   const handleCloseMenu = () => {
     setOpen(null);
   };
@@ -83,16 +90,27 @@ export default function AdditionsPage() {
     }
   }
 
+  const handleClose = () => {
+    setOpenCompletionDialog(false)
+    setReadOnly(true)
+  }
+
+  const handleRetry = () => {
+    setOpenCompletionDialog(false);
+    setReadOnly(false);
+    dispatch(clearAddtionsQuestions());
+  }
+
   return (
     <>
       <Helmet>
-        <title> User | Minimal UI </title>
+        <title> Additions | Minimal UI </title>
       </Helmet>
 
       <Container>
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
           <Typography variant="h4" gutterBottom>
-            Subtractions
+            Additions
           </Typography>
         </Stack>
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
@@ -114,7 +132,7 @@ export default function AdditionsPage() {
             %
           </Typography>
           <Typography variant="h6" gutterBottom>
-            <Timer/>
+            <Timer />
           </Typography>
         </Stack>
         <Card>
@@ -147,20 +165,43 @@ export default function AdditionsPage() {
                 helperText={!validAnswer ? 'Please enter answer.' : ''}
                 value={answer}
                 type="number"
+                disabled={readOnly}
                 onKeyDown={onKeyPress}
                 variant="outlined"
                 onChange={handleAnswerChange}
               />
             </Grid>
             <Grid item md={1} paddingTop={1}>
-              <Button type="submit" variant="contained" onClick={handleSubmit}>
+              <Button type="submit" variant="contained" disabled={readOnly} onClick={handleSubmit}>
                 Submit
               </Button>
             </Grid>
           </Grid>
         </Card>
-        <MathsTableView datasource={additions.filter(f => f.result === false)} operation="+"/>
-        <MathsTableView datasource={additions.filter(f => f.result === true)} operation="+"/>
+        <MathsTableView datasource={additions.filter((f) => f.result === false)} operation="+" />
+        <MathsTableView datasource={additions.filter((f) => f.result === true)} operation="+" />
+
+        {openCompletionDialog ? (
+          <Dialog
+            open={openCompletionDialog}
+            onClose={handleClose}
+            aria-labelledby="alert-dialog-title"
+            aria-describedby="alert-dialog-description"
+          >
+            <DialogTitle id="alert-dialog-title">{'Mathshacker'}</DialogTitle>
+            <DialogContent>
+              <DialogContentText id="alert-dialog-description">
+                You have completed the {totalQuestions} Questions. Do you want to retry anoth {totalQuestions}?
+              </DialogContentText>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={handleClose}>Close</Button>
+              <Button onClick={handleRetry} autoFocus>
+                Retry
+              </Button>
+            </DialogActions>
+          </Dialog>
+        ) : null}
       </Container>
 
       <Popover

@@ -29,9 +29,17 @@ const additionsSlice = createSlice({
         correctAnswer: expected,
       });
     },
+    clearAddtionsQuestions: (state) => {
+      console.log('clearAddtionsQuestions');
+      state.additions = [];
+    },
+    clearSubtractionsQuestions: (state) => {
+      console.log('clearAddtionsQuestions');
+      state.subtractions = [];
+    },
   },
 });
 
-export const { addNumbers, subtractNumbers } = additionsSlice.actions;
+export const { addNumbers, subtractNumbers, clearAddtionsQuestions, clearSubtractionsQuestions } = additionsSlice.actions;
 
 export default additionsSlice.reducer;
