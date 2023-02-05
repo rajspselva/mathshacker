@@ -1,6 +1,6 @@
 import { Helmet } from 'react-helmet-async';
 import { useState, useEffect } from 'react';
-import {useDispatch, useSelector} from "react-redux";
+import { useDispatch, useSelector } from 'react-redux';
 // @mui
 import {
   Grid,
@@ -22,21 +22,20 @@ import {
 import Iconify from '../components/iconify';
 // sections
 import { addNumbers, clearAddtionsQuestions } from '../reducers/additions';
-import MathsTableView from "../components/math-table-view";
-import Timer from "../components/timer";
+import MathsTableView from '../components/math-table-view';
+import Timer from '../components/timer';
 
 export default function AdditionsPage() {
-  
   const [open, setOpen] = useState(null);
-  const [totalQuestions] = useState(100)
-  const [answer, setAnswer] = useState("")
-  const [number1, setNumber1] = useState(0)
-  const [number2, setNumber2] = useState(1)
-  const [validAnswer, setValidAnswer] = useState(true)
+  const [totalQuestions] = useState(100);
+  const [answer, setAnswer] = useState('');
+  const [number1, setNumber1] = useState(0);
+  const [number2, setNumber2] = useState(1);
+  const [validAnswer, setValidAnswer] = useState(true);
   const dispatch = useDispatch();
   const { additions } = useSelector((state) => state.maths);
-  const [openCompletionDialog, setOpenCompletionDialog] = useState(false)
-  const [readOnly, setReadOnly] = useState(false)
+  const [openCompletionDialog, setOpenCompletionDialog] = useState(false);
+  const [readOnly, setReadOnly] = useState(false);
 
   const getRandomNumber = (min, max) => Math.floor(Math.random() * (max - min) + min);
 
@@ -44,7 +43,7 @@ export default function AdditionsPage() {
     const regex = /^[0-9\b]+$/;
     if (event.target.value === '' || regex.test(event.target.value)) {
       setAnswer(event.target.value);
-      setValidAnswer(true)
+      setValidAnswer(true);
     }
   };
 
@@ -56,18 +55,20 @@ export default function AdditionsPage() {
   };
 
   const handleSubmit = () => {
-    if (answer !== "") {
-      dispatch(addNumbers({
-        number1,
-        number2,
-        answer
-      }))
+    if (answer !== '') {
+      dispatch(
+        addNumbers({
+          number1,
+          number2,
+          answer,
+        })
+      );
       restNumbers();
-      setAnswer("");
+      setAnswer('');
     } else {
-      setValidAnswer(false)
+      setValidAnswer(false);
     }
-  }
+  };
 
   useEffect(() => {
     restNumbers();
@@ -76,30 +77,30 @@ export default function AdditionsPage() {
 
   useEffect(() => {
     if (additions.length === totalQuestions) {
-      setOpenCompletionDialog(true)
+      setOpenCompletionDialog(true);
     }
-  }, [additions, totalQuestions])
+  }, [additions, totalQuestions]);
 
   const handleCloseMenu = () => {
     setOpen(null);
   };
 
   const onKeyPress = (e) => {
-    if(e.keyCode === 13){
-      handleSubmit()
+    if (e.keyCode === 13) {
+      handleSubmit();
     }
-  }
+  };
 
   const handleClose = () => {
-    setOpenCompletionDialog(false)
-    setReadOnly(true)
-  }
+    setOpenCompletionDialog(false);
+    setReadOnly(true);
+  };
 
   const handleRetry = () => {
     setOpenCompletionDialog(false);
     setReadOnly(false);
     dispatch(clearAddtionsQuestions());
-  }
+  };
 
   return (
     <>
@@ -178,7 +179,18 @@ export default function AdditionsPage() {
             </Grid>
           </Grid>
         </Card>
+
+        <Stack direction="row" alignItems="center" justifyContent="space-between" mt={5} mb={0}>
+          <Typography variant="h4" gutterBottom>
+            Incorrect Answers
+          </Typography>
+        </Stack>
         <MathsTableView datasource={additions.filter((f) => f.result === false)} operation="+" />
+        <Stack direction="row" alignItems="center" justifyContent="space-between" mt={5} mb={0}>
+          <Typography variant="h4" gutterBottom>
+            Correct Answers
+          </Typography>
+        </Stack>
         <MathsTableView datasource={additions.filter((f) => f.result === true)} operation="+" />
 
         {openCompletionDialog ? (

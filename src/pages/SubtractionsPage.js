@@ -155,13 +155,23 @@ export default function SubtractionsPage() {
               />
             </Grid>
             <Grid item md={1} paddingTop={1}>
-              <Button type="submit" disabled={readOnly}  variant="contained" onClick={handleSubmit}>
+              <Button type="submit" disabled={readOnly} variant="contained" onClick={handleSubmit}>
                 Submit
               </Button>
             </Grid>
           </Grid>
         </Card>
+        <Stack direction="row" alignItems="center" justifyContent="space-between" mt={5} mb={0}>
+          <Typography variant="h4" gutterBottom>
+            Incorrect Answers
+          </Typography>
+        </Stack>
         <MathsTableView datasource={subtractions.filter((f) => f.result === false)} operation="-" />
+        <Stack direction="row" alignItems="center" justifyContent="space-between" mt={5} mb={0}>
+          <Typography variant="h4" gutterBottom>
+            Correct Answers
+          </Typography>
+        </Stack>
         <MathsTableView datasource={subtractions.filter((f) => f.result === true)} operation="-" />
         {openCompletionDialog ? (
           <Dialog
