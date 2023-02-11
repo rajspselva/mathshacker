@@ -21,11 +21,11 @@ const navConfig = [
     path: '/dashboard/subtractions',
     icon: icon('ic_lock'),
   },
-  // {
-  //   title: 'blog',
-  //   path: '/dashboard/blog',
-  //   icon: icon('ic_blog'),
-  // },
+  {
+    title: 'Two Digit Additions',
+    path: '/dashboard/two-digit-additions',
+    icon: icon('ic_lock'),
+  },
   // {
   //   title: 'login',
   //   path: '/login',

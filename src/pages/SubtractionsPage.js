@@ -10,7 +10,7 @@ import MathsTableView from '../components/math-table-view';
 import Timer from '../components/timer';
 
 export default function SubtractionsPage() {
-  const [totalQuestions] = useState(5);
+  const [totalQuestions] = useState(75);
   const [answer, setAnswer] = useState('');
   const [number1, setNumber1] = useState(0);
   const [number2, setNumber2] = useState(0);

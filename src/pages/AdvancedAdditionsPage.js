@@ -25,9 +25,9 @@ import { addNumbers, clearAddtionsQuestions } from '../reducers/additions';
 import MathsTableView from '../components/math-table-view';
 import Timer from '../components/timer';
 
-export default function AdditionsPage() {
+export default function AdvancedAdditionsPage() {
   const [open, setOpen] = useState(null);
-  const [totalQuestions] = useState(75);
+  const [totalQuestions] = useState(25);
   const [answer, setAnswer] = useState('');
   const [number1, setNumber1] = useState(0);
   const [number2, setNumber2] = useState(1);
@@ -48,8 +48,8 @@ export default function AdditionsPage() {
   };
 
   const restNumbers = () => {
-    const n1 = getRandomNumber(1, 9);
-    const n2 = getRandomNumber(1, 9);
+    const n1 = getRandomNumber(10, 99);
+    const n2 = getRandomNumber(10, 99);
     setNumber1(n1);
     setNumber2(n2);
   };
@@ -138,7 +138,7 @@ export default function AdditionsPage() {
         </Stack>
         <Card>
           <Grid container padding={3}>
-            <Grid item md={2} paddingTop={1}>
+            <Grid item md={2} paddingTop={1} paddingLeft={6}>
               <Typography variant="h4" gutterBottom>
                 {number1}
               </Typography>
@@ -148,21 +148,19 @@ export default function AdditionsPage() {
                 +
               </Typography>
             </Grid>
-            <Grid item md={2} paddingTop={1}>
+          </Grid>
+          <Grid container paddingLeft={3}>
+            <Grid item md={2} paddingTop={1} paddingLeft={6}>
               <Typography variant="h4" gutterBottom>
                 {number2}
               </Typography>
             </Grid>
-            <Grid item md={2} paddingTop={1}>
-              <Typography variant="h4" gutterBottom>
-                =
-              </Typography>
-            </Grid>
-            <Grid item md={3}>
+          </Grid>
+          <Grid container padding={2}>
+            <Grid item md={3} paddingLeft={6}>
               <TextField
                 error={!validAnswer}
                 inputRef={(input) => input && input.focus()}
-                label="Answer"
                 helperText={!validAnswer ? 'Please enter answer.' : ''}
                 value={answer}
                 type="number"
@@ -172,7 +170,7 @@ export default function AdditionsPage() {
                 onChange={handleAnswerChange}
               />
             </Grid>
-            <Grid item md={1} paddingTop={1}>
+            <Grid item md={1} paddingTop={1} paddingLeft={3}>
               <Button type="submit" variant="contained" disabled={readOnly} onClick={handleSubmit}>
                 Submit
               </Button>

@@ -8,6 +8,7 @@ import LoginPage from './pages/LoginPage';
 import Page404 from './pages/Page404';
 import DashboardAppPage from './pages/DashboardAppPage';
 import SubtractionsPage from "./pages/SubtractionsPage";
+import AdvancedAdditionsPag from './pages/AdvancedAdditionsPage';
 
 // ----------------------------------------------------------------------
 
@@ -21,7 +22,7 @@ export default function Router() {
         { path: 'app', element: <DashboardAppPage /> },
         { path: 'additions', element: <AdditionsPage /> },
         { path: 'subtractions', element: <SubtractionsPage /> },
-        // { path: 'blog', element: <BlogPage /> },
+        { path: 'two-digit-additions', element: <AdvancedAdditionsPag /> },
       ],
     },
     {
