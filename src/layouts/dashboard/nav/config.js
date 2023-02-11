@@ -22,6 +22,11 @@ const navConfig = [
     icon: icon('ic_lock'),
   },
   {
+    title: 'Multiplication',
+    path: '/dashboard/multiplication',
+    icon: icon('ic_lock'),
+  },
+  {
     title: 'Two Digit Additions',
     path: '/dashboard/two-digit-additions',
     icon: icon('ic_lock'),

@@ -21,7 +21,7 @@ import {
 // components
 import Iconify from '../components/iconify';
 // sections
-import { addNumbers, clearAddtionsQuestions } from '../reducers/additions';
+import { addTwoDigitNumbers, clearTwoDigitAdditionsQuestions } from '../reducers/additions';
 import MathsTableView from '../components/math-table-view';
 import Timer from '../components/timer';
 
@@ -33,7 +33,7 @@ export default function AdvancedAdditionsPage() {
   const [number2, setNumber2] = useState(1);
   const [validAnswer, setValidAnswer] = useState(true);
   const dispatch = useDispatch();
-  const { additions } = useSelector((state) => state.maths);
+  const { twoAdditions } = useSelector((state) => state.maths);
   const [openCompletionDialog, setOpenCompletionDialog] = useState(false);
   const [readOnly, setReadOnly] = useState(false);
 
@@ -57,7 +57,7 @@ export default function AdvancedAdditionsPage() {
   const handleSubmit = () => {
     if (answer !== '') {
       dispatch(
-        addNumbers({
+          addTwoDigitNumbers({
           number1,
           number2,
           answer,
@@ -76,10 +76,10 @@ export default function AdvancedAdditionsPage() {
   }, []);
 
   useEffect(() => {
-    if (additions.length === totalQuestions) {
+    if (twoAdditions.length === totalQuestions) {
       setOpenCompletionDialog(true);
     }
-  }, [additions, totalQuestions]);
+  }, [twoAdditions, totalQuestions]);
 
   const handleCloseMenu = () => {
     setOpen(null);
@@ -99,19 +99,19 @@ export default function AdvancedAdditionsPage() {
   const handleRetry = () => {
     setOpenCompletionDialog(false);
     setReadOnly(false);
-    dispatch(clearAddtionsQuestions());
+    dispatch(clearTwoDigitAdditionsQuestions());
   };
 
   return (
     <>
       <Helmet>
-        <title> Additions | Minimal UI </title>
+        <title> Two Digits Additions | Minimal UI </title>
       </Helmet>
 
       <Container>
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
           <Typography variant="h4" gutterBottom>
-            Additions
+            Two Digits Additions
           </Typography>
         </Stack>
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
@@ -119,15 +119,15 @@ export default function AdvancedAdditionsPage() {
             Total Questions: {totalQuestions}
           </Typography>
           <Typography variant="h6" gutterBottom>
-            Remaining: {totalQuestions - additions.length}
+            Remaining: {totalQuestions - twoAdditions.length}
           </Typography>
           <Typography variant="h6" gutterBottom>
-            Correct Anwser: {additions.filter((f) => f.result === true).length}
+            Correct Anwser: {twoAdditions.filter((f) => f.result === true).length}
           </Typography>
           <Typography variant="h6" gutterBottom>
             Accuracy:{' '}
-            {(additions.length !== 0
-              ? (additions.filter((f) => f.result === true).length / additions.length) * totalQuestions
+            {(twoAdditions.length !== 0
+              ? (twoAdditions.filter((f) => f.result === true).length / twoAdditions.length) * totalQuestions
               : 0
             ).toFixed(2)}
             %
@@ -183,13 +183,13 @@ export default function AdvancedAdditionsPage() {
             Incorrect Answers
           </Typography>
         </Stack>
-        <MathsTableView datasource={additions.filter((f) => f.result === false)} operation="+" />
+        <MathsTableView datasource={twoAdditions.filter((f) => f.result === false)} operation="+" />
         <Stack direction="row" alignItems="center" justifyContent="space-between" mt={5} mb={0}>
           <Typography variant="h4" gutterBottom>
             Correct Answers
           </Typography>
         </Stack>
-        <MathsTableView datasource={additions.filter((f) => f.result === true)} operation="+" />
+        <MathsTableView datasource={twoAdditions.filter((f) => f.result === true)} operation="+" />
 
         {openCompletionDialog ? (
           <Dialog

@@ -21,11 +21,11 @@ import {
 // components
 import Iconify from '../components/iconify';
 // sections
-import { addNumbers, clearAdditionsQuestions } from '../reducers/additions';
+import {multiplicationNumbers, clearTwoDigitAdditionsQuestions } from '../reducers/additions';
 import MathsTableView from '../components/math-table-view';
 import Timer from '../components/timer';
 
-export default function AdditionsPage() {
+export default function MultiplicationPage() {
   const [open, setOpen] = useState(null);
   const [totalQuestions] = useState(75);
   const [answer, setAnswer] = useState('');
@@ -33,7 +33,7 @@ export default function AdditionsPage() {
   const [number2, setNumber2] = useState(1);
   const [validAnswer, setValidAnswer] = useState(true);
   const dispatch = useDispatch();
-  const { additions } = useSelector((state) => state.maths);
+  const { multiplications } = useSelector((state) => state.maths);
   const [openCompletionDialog, setOpenCompletionDialog] = useState(false);
   const [readOnly, setReadOnly] = useState(false);
 
@@ -57,7 +57,7 @@ export default function AdditionsPage() {
   const handleSubmit = () => {
     if (answer !== '') {
       dispatch(
-        addNumbers({
+          multiplicationNumbers({
           number1,
           number2,
           answer,
@@ -76,10 +76,10 @@ export default function AdditionsPage() {
   }, []);
 
   useEffect(() => {
-    if (additions.length === totalQuestions) {
+    if (multiplications.length === totalQuestions) {
       setOpenCompletionDialog(true);
     }
-  }, [additions, totalQuestions]);
+  }, [multiplications, totalQuestions]);
 
   const handleCloseMenu = () => {
     setOpen(null);
@@ -99,19 +99,19 @@ export default function AdditionsPage() {
   const handleRetry = () => {
     setOpenCompletionDialog(false);
     setReadOnly(false);
-    dispatch(clearAdditionsQuestions());
+    dispatch(clearTwoDigitAdditionsQuestions());
   };
 
   return (
     <>
       <Helmet>
-        <title> Additions | Minimal UI </title>
+        <title> Multiplications | Minimal UI </title>
       </Helmet>
 
       <Container>
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
           <Typography variant="h4" gutterBottom>
-            Additions
+            Multiplications
           </Typography>
         </Stack>
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
@@ -119,15 +119,15 @@ export default function AdditionsPage() {
             Total Questions: {totalQuestions}
           </Typography>
           <Typography variant="h6" gutterBottom>
-            Remaining: {totalQuestions - additions.length}
+            Remaining: {totalQuestions - multiplications.length}
           </Typography>
           <Typography variant="h6" gutterBottom>
-            Correct Anwser: {additions.filter((f) => f.result === true).length}
+            Correct Anwser: {multiplications.filter((f) => f.result === true).length}
           </Typography>
           <Typography variant="h6" gutterBottom>
             Accuracy:{' '}
-            {(additions.length !== 0
-              ? (additions.filter((f) => f.result === true).length / additions.length) * totalQuestions
+            {(multiplications.length !== 0
+              ? (multiplications.filter((f) => f.result === true).length / multiplications.length) * totalQuestions
               : 0
             ).toFixed(2)}
             %
@@ -145,7 +145,7 @@ export default function AdditionsPage() {
             </Grid>
             <Grid item md={2} paddingTop={1}>
               <Typography variant="h4" gutterBottom>
-                +
+                *
               </Typography>
             </Grid>
             <Grid item md={2} paddingTop={1}>
@@ -185,13 +185,13 @@ export default function AdditionsPage() {
             Incorrect Answers
           </Typography>
         </Stack>
-        <MathsTableView datasource={additions.filter((f) => f.result === false)} operation="+" />
+        <MathsTableView datasource={multiplications.filter((f) => f.result === false)} operation="+" />
         <Stack direction="row" alignItems="center" justifyContent="space-between" mt={5} mb={0}>
           <Typography variant="h4" gutterBottom>
             Correct Answers
           </Typography>
         </Stack>
-        <MathsTableView datasource={additions.filter((f) => f.result === true)} operation="+" />
+        <MathsTableView datasource={multiplications.filter((f) => f.result === true)} operation="+" />
 
         {openCompletionDialog ? (
           <Dialog
