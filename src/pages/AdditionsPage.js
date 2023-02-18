@@ -22,6 +22,7 @@ import {
 import Iconify from '../components/iconify';
 // sections
 import { addNumbers, clearAdditionsQuestions } from '../reducers/additions';
+import { getRandomNumber } from './Utils';
 import MathsTableView from '../components/math-table-view';
 import Timer from '../components/timer';
 
@@ -37,8 +38,6 @@ export default function AdditionsPage() {
   const [openCompletionDialog, setOpenCompletionDialog] = useState(false);
   const [readOnly, setReadOnly] = useState(false);
 
-  const getRandomNumber = (min, max) => Math.floor(Math.random() * (max - min) + min);
-
   const handleAnswerChange = (event) => {
     const regex = /^[0-9\b]+$/;
     if (event.target.value === '' || regex.test(event.target.value)) {
@@ -47,11 +46,11 @@ export default function AdditionsPage() {
     }
   };
 
-  const restNumbers = () => {
-    const n1 = getRandomNumber(1, 9);
-    const n2 = getRandomNumber(1, 9);
-    setNumber1(n1);
-    setNumber2(n2);
+  const resetNumbers = () => {
+    const n1 = getRandomNumber(9);
+    const n2 = getRandomNumber(9);
+      setNumber1(n1);
+      setNumber2(n2);
   };
 
   const handleSubmit = () => {
@@ -63,7 +62,7 @@ export default function AdditionsPage() {
           answer,
         })
       );
-      restNumbers();
+      resetNumbers();
       setAnswer('');
     } else {
       setValidAnswer(false);
@@ -71,7 +70,7 @@ export default function AdditionsPage() {
   };
 
   useEffect(() => {
-    restNumbers();
+    resetNumbers();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -127,7 +126,7 @@ export default function AdditionsPage() {
           <Typography variant="h6" gutterBottom>
             Accuracy:{' '}
             {(additions.length !== 0
-              ? (additions.filter((f) => f.result === true).length / additions.length) * totalQuestions
+              ? (additions.filter((f) => f.result === true).length / additions.length) * 100
               : 0
             ).toFixed(2)}
             %

@@ -2,12 +2,26 @@ import { Helmet } from 'react-helmet-async';
 import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 // @mui
-import { Grid, Card, Stack, Button, Container, Typography, TextField, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions } from '@mui/material';
+import {
+  Grid,
+  Card,
+  Stack,
+  Button,
+  Container,
+  Typography,
+  TextField,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
+} from '@mui/material';
 
 // sections
 import { subtractNumbers, clearSubtractionsQuestions } from '../reducers/additions';
 import MathsTableView from '../components/math-table-view';
 import Timer from '../components/timer';
+import { getRandomNumber } from './Utils';
 
 export default function SubtractionsPage() {
   const [totalQuestions] = useState(75);
@@ -17,26 +31,20 @@ export default function SubtractionsPage() {
   const [validAnswer, setValidAnswer] = useState(true);
   const dispatch = useDispatch();
   const { subtractions } = useSelector((state) => state.maths);
-    const [openCompletionDialog, setOpenCompletionDialog] = useState(false);
-    const [readOnly, setReadOnly] = useState(false);
-
-  const getRandomNumber = (min, max) => Math.floor(Math.random() * (max - min) + min);
+  const [openCompletionDialog, setOpenCompletionDialog] = useState(false);
+  const [readOnly, setReadOnly] = useState(false);
 
   const handleAnswerChange = (event) => {
-    const regex = /^[0-9\b]+$/;
+    const regex = /^[0-9-\b]+$/;
     if (event.target.value === '' || regex.test(event.target.value)) {
       setAnswer(event.target.value);
       setValidAnswer(true);
     }
   };
 
-  const restNumbers = () => {
-    const n1 = getRandomNumber(1, 9);
-    const n2 = getRandomNumber(1, 9);
-    if (n2 > n1 || n1 === n2) {
-      restNumbers();
-      return;
-    }
+  const resetNumbers = () => {
+    const n1 = getRandomNumber(9);
+    const n2 = getRandomNumber(9);
     setNumber1(n1);
     setNumber2(n2);
   };
@@ -50,23 +58,23 @@ export default function SubtractionsPage() {
           answer,
         })
       );
-        restNumbers();
-        setAnswer('');
+      resetNumbers();
+      setAnswer('');
     } else {
       setValidAnswer(false);
     }
   };
 
   useEffect(() => {
-    restNumbers();
+    resetNumbers();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-    useEffect(() => {
-      if (subtractions.length === totalQuestions) {
-        setOpenCompletionDialog(true);
-      }
-    }, [subtractions, totalQuestions]);
+  useEffect(() => {
+    if (subtractions.length === totalQuestions) {
+      setOpenCompletionDialog(true);
+    }
+  }, [subtractions, totalQuestions]);
 
   const onKeyPress = (e) => {
     if (e.keyCode === 13) {
@@ -109,7 +117,7 @@ export default function SubtractionsPage() {
           <Typography variant="h6" gutterBottom>
             Accuracy:{' '}
             {(subtractions.length !== 0
-              ? (subtractions.filter((f) => f.result === true).length / subtractions.length) * totalQuestions
+              ? (subtractions.filter((f) => f.result === true).length / subtractions.length) * 100
               : 0
             ).toFixed(2)}
             %

@@ -127,7 +127,7 @@ export default function AdvancedAdditionsPage() {
           <Typography variant="h6" gutterBottom>
             Accuracy:{' '}
             {(twoAdditions.length !== 0
-              ? (twoAdditions.filter((f) => f.result === true).length / twoAdditions.length) * totalQuestions
+              ? (twoAdditions.filter((f) => f.result === true).length / twoAdditions.length) * 100
               : 0
             ).toFixed(2)}
             %
