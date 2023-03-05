@@ -24,10 +24,11 @@ import Iconify from '../components/iconify';
 import { addTwoDigitNumbers, clearTwoDigitAdditionsQuestions } from '../reducers/additions';
 import MathsTableView from '../components/math-table-view';
 import Timer from '../components/timer';
+import settings from '../config/settings.json'
 
 export default function AdvancedAdditionsPage() {
   const [open, setOpen] = useState(null);
-  const [totalQuestions] = useState(25);
+  const [totalQuestions] = useState(settings.totalDoubleDigitSumn);
   const [answer, setAnswer] = useState('');
   const [number1, setNumber1] = useState(0);
   const [number2, setNumber2] = useState(1);
@@ -48,8 +49,8 @@ export default function AdvancedAdditionsPage() {
   };
 
   const restNumbers = () => {
-    const n1 = getRandomNumber(10, 99);
-    const n2 = getRandomNumber(10, 99);
+    const n1 = getRandomNumber(10, 999);
+    const n2 = getRandomNumber(10, 999);
     setNumber1(n1);
     setNumber2(n2);
   };
@@ -105,13 +106,13 @@ export default function AdvancedAdditionsPage() {
   return (
     <>
       <Helmet>
-        <title> Two Digits Additions | Minimal UI </title>
+        <title> Advanced Additions | Minimal UI </title>
       </Helmet>
 
       <Container>
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
           <Typography variant="h4" gutterBottom>
-            Two Digits Additions
+            Advanced Additions
           </Typography>
         </Stack>
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>

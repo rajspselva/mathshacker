@@ -24,7 +24,7 @@ export default function Router() {
         { path: 'additions', element: <AdditionsPage /> },
         { path: 'subtractions', element: <SubtractionsPage /> },
         { path: 'multiplication', element: <MultiplicationPage /> },
-        { path: 'two-digit-additions', element: <AdvancedAdditionsPag /> },
+        { path: 'advanced-additions', element: <AdvancedAdditionsPag /> },
       ],
     },
     {

@@ -27,8 +27,8 @@ const navConfig = [
     icon: icon('ic_lock'),
   },
   {
-    title: 'Two Digit Additions',
-    path: '/dashboard/two-digit-additions',
+    title: 'Advanced Additions',
+    path: '/dashboard/advanced-additions',
     icon: icon('ic_lock'),
   },
   // {

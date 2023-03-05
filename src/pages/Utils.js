@@ -1,16 +1,22 @@
-export const uniqueNumber = (numbers = [], maxVal) => {
-  const number = Math.floor(Math.random() * maxVal + 1);
-  if (!numbers.includes(number)) {
-    numbers.push(number);
-    return number;
-  } 
-  if (numbers.length - 1 !== maxVal) {
-    this.uniqueNumber(maxVal);
-  }
-  return null;
-};
+/* eslint-disable no-plusplus */
+export const generatePairs = () => {
+  const pairs = new Set()
 
-export const getRandomNumber = (max) => {
-  const numbers = [];
-  return uniqueNumber(numbers, max);
-};
+  while (pairs.size < 100) {
+    const a = Math.floor(Math.random() * 10)
+    const b = Math.floor(Math.random() * 10)
+
+    if (a !== b) {
+      const pair = [a, b].sort(() => Math.random() - 0.5)
+      pairs.add(pair)
+    }
+  }
+  return Array.from(pairs)
+}
+
+export const pickRandomPair = (pairs) => {
+  const index = Math.floor(Math.random() * pairs.length)
+  const pair = pairs[index]
+  pairs.splice(index, 1)
+  return pair
+}

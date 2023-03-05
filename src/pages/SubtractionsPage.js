@@ -1,6 +1,6 @@
-import { Helmet } from 'react-helmet-async';
-import { useState, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { Helmet } from 'react-helmet-async'
+import { useState, useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 // @mui
 import {
   Grid,
@@ -15,83 +15,87 @@ import {
   DialogContent,
   DialogContentText,
   DialogActions,
-} from '@mui/material';
+} from '@mui/material'
 
 // sections
-import { subtractNumbers, clearSubtractionsQuestions } from '../reducers/additions';
-import MathsTableView from '../components/math-table-view';
-import Timer from '../components/timer';
-import { getRandomNumber } from './Utils';
+import { subtractNumbers, clearSubtractionsQuestions } from '../reducers/additions'
+import MathsTableView from '../components/math-table-view'
+import Timer from '../components/timer'
+import settings from '../config/settings.json'
+import { generatePairs, pickRandomPair } from './Utils'
 
 export default function SubtractionsPage() {
-  const [totalQuestions] = useState(75);
-  const [answer, setAnswer] = useState('');
-  const [number1, setNumber1] = useState(0);
-  const [number2, setNumber2] = useState(0);
-  const [validAnswer, setValidAnswer] = useState(true);
-  const dispatch = useDispatch();
-  const { subtractions } = useSelector((state) => state.maths);
-  const [openCompletionDialog, setOpenCompletionDialog] = useState(false);
-  const [readOnly, setReadOnly] = useState(false);
+  const [totalQuestions] = useState(settings.totalSigleDigitsSums);
+  const [answer, setAnswer] = useState('')
+  const [validAnswer, setValidAnswer] = useState(true)
+  const dispatch = useDispatch()
+  const { subtractions } = useSelector((state) => state.maths)
+  const [openCompletionDialog, setOpenCompletionDialog] = useState(false)
+  const [readOnly, setReadOnly] = useState(false)
+  const [numberPairs, setNumberPairs] = useState([])
+  const [currentPair, setCurrentPair] = useState([])
 
   const handleAnswerChange = (event) => {
-    const regex = /^[0-9-\b]+$/;
+    const regex = /^[0-9-\b]+$/
     if (event.target.value === '' || regex.test(event.target.value)) {
-      setAnswer(event.target.value);
-      setValidAnswer(true);
+      setAnswer(event.target.value)
+      setValidAnswer(true)
     }
-  };
+  }
 
   const resetNumbers = () => {
-    const n1 = getRandomNumber(9);
-    const n2 = getRandomNumber(9);
-    setNumber1(n1);
-    setNumber2(n2);
-  };
+    setNumberPairs(generatePairs())
+  }
+
+   useEffect(() => {
+     if (numberPairs.length > 0) {
+       setCurrentPair(pickRandomPair(numberPairs))
+     }
+   }, [numberPairs])
 
   const handleSubmit = () => {
     if (answer !== '') {
       dispatch(
         subtractNumbers({
-          number1,
-          number2,
+          number1: currentPair[0],
+          number2: currentPair[1],
           answer,
         })
-      );
-      resetNumbers();
-      setAnswer('');
+      )
+      setCurrentPair(pickRandomPair(numberPairs))
+      setAnswer('')
     } else {
-      setValidAnswer(false);
+      setValidAnswer(false)
     }
-  };
+  }
 
   useEffect(() => {
-    resetNumbers();
+    resetNumbers()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [])
 
   useEffect(() => {
     if (subtractions.length === totalQuestions) {
-      setOpenCompletionDialog(true);
+      setOpenCompletionDialog(true)
     }
-  }, [subtractions, totalQuestions]);
+  }, [subtractions, totalQuestions])
 
   const onKeyPress = (e) => {
     if (e.keyCode === 13) {
-      handleSubmit();
+      handleSubmit()
     }
-  };
+  }
 
   const handleClose = () => {
-    setOpenCompletionDialog(false);
-    setReadOnly(true);
-  };
+    setOpenCompletionDialog(false)
+    setReadOnly(true)
+  }
 
   const handleRetry = () => {
-    setOpenCompletionDialog(false);
-    setReadOnly(false);
-    dispatch(clearSubtractionsQuestions());
-  };
+    setOpenCompletionDialog(false)
+    setReadOnly(false)
+    dispatch(clearSubtractionsQuestions())
+  }
 
   return (
     <>
@@ -130,7 +134,7 @@ export default function SubtractionsPage() {
           <Grid container padding={3}>
             <Grid item md={2} paddingTop={1}>
               <Typography variant="h4" gutterBottom>
-                {number1}
+                {currentPair[0]}
               </Typography>
             </Grid>
             <Grid item md={2} paddingTop={1}>
@@ -140,7 +144,7 @@ export default function SubtractionsPage() {
             </Grid>
             <Grid item md={2} paddingTop={1}>
               <Typography variant="h4" gutterBottom>
-                {number2}
+                {currentPair[1]}
               </Typography>
             </Grid>
             <Grid item md={2} paddingTop={1}>
@@ -204,5 +208,5 @@ export default function SubtractionsPage() {
         ) : null}
       </Container>
     </>
-  );
+  )
 }
