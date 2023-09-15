@@ -1,6 +1,7 @@
 import { Helmet } from 'react-helmet-async';
 import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useSearchParams } from 'react-router-dom';
 // @mui
 import {
   Grid,
@@ -20,24 +21,26 @@ import {
 } from '@mui/material';
 // components
 import Iconify from '../components/iconify';
+import settings from '../config/settings.json';
 // sections
-import {multiplicationNumbers, clearTwoDigitAdditionsQuestions } from '../reducers/additions';
+import { multiplicationNumbers, clearTwoDigitAdditionsQuestions } from '../reducers/additions';
 import MathsTableView from '../components/math-table-view';
 import Timer from '../components/timer';
+import { generatePairs, pickRandomPair } from './Utils';
 
 export default function MultiplicationPage() {
   const [open, setOpen] = useState(null);
-  const [totalQuestions] = useState(75);
+  const [totalQuestions, setTotalQuestions] = useState(0);
   const [answer, setAnswer] = useState('');
-  const [number1, setNumber1] = useState(0);
-  const [number2, setNumber2] = useState(1);
   const [validAnswer, setValidAnswer] = useState(true);
   const dispatch = useDispatch();
   const { multiplications } = useSelector((state) => state.maths);
   const [openCompletionDialog, setOpenCompletionDialog] = useState(false);
   const [readOnly, setReadOnly] = useState(false);
-
-  const getRandomNumber = (min, max) => Math.floor(Math.random() * (max - min) + min);
+  const [numberPairs, setNumberPairs] = useState([]);
+  const [currentPair, setCurrentPair] = useState([]);
+  const [searchParams] = useSearchParams();
+  const advanced = searchParams.get('advanced');
 
   const handleAnswerChange = (event) => {
     const regex = /^[0-9\b]+$/;
@@ -47,36 +50,55 @@ export default function MultiplicationPage() {
     }
   };
 
-  const restNumbers = () => {
-    const n1 = getRandomNumber(1, 9);
-    const n2 = getRandomNumber(1, 9);
-    setNumber1(n1);
-    setNumber2(n2);
-  };
-
   const handleSubmit = () => {
     if (answer !== '') {
       dispatch(
-          multiplicationNumbers({
-          number1,
-          number2,
+        multiplicationNumbers({
+          number1: currentPair[0],
+          number2: currentPair[1],
           answer,
         })
       );
-      restNumbers();
+      setCurrentPair(pickRandomPair(numberPairs));
       setAnswer('');
     } else {
       setValidAnswer(false);
     }
   };
 
+  const resetNumbers = () => {
+    if (advanced === 'true') {  
+      setTotalQuestions(200);
+      setNumberPairs(generatePairs(25));
+    } else {
+      setTotalQuestions(settings.totalMultiplications);
+      setNumberPairs(generatePairs());
+    }
+  };
+
   useEffect(() => {
-    restNumbers();
+    if (numberPairs.length > 0) {
+      setCurrentPair(pickRandomPair(numberPairs));
+    }
+  }, [numberPairs]);
+
+  useEffect(() => {
+    resetNumbers();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
-    if (multiplications.length === totalQuestions) {
+    if (advanced === 'true') {
+      setTotalQuestions(200);
+      setNumberPairs(generatePairs(25));
+    } else {
+      setTotalQuestions(settings.totalMultiplications);
+      setNumberPairs(generatePairs());
+    }
+  }, [advanced]);
+
+  useEffect(() => {
+    if (multiplications.length === totalQuestions && totalQuestions !== 0) {
       setOpenCompletionDialog(true);
     }
   }, [multiplications, totalQuestions]);
@@ -127,7 +149,7 @@ export default function MultiplicationPage() {
           <Typography variant="h6" gutterBottom>
             Accuracy:{' '}
             {(multiplications.length !== 0
-              ? (multiplications.filter((f) => f.result === true).length / multiplications.length) * totalQuestions
+              ? (multiplications.filter((f) => f.result === true).length / multiplications.length) * 100
               : 0
             ).toFixed(2)}
             %
@@ -140,7 +162,7 @@ export default function MultiplicationPage() {
           <Grid container padding={3}>
             <Grid item md={2} paddingTop={1}>
               <Typography variant="h4" gutterBottom>
-                {number1}
+                {currentPair.length > 0 ? currentPair[0] : 0}
               </Typography>
             </Grid>
             <Grid item md={2} paddingTop={1}>
@@ -150,7 +172,7 @@ export default function MultiplicationPage() {
             </Grid>
             <Grid item md={2} paddingTop={1}>
               <Typography variant="h4" gutterBottom>
-                {number2}
+                {currentPair.length > 0 ? currentPair[1] : 0}
               </Typography>
             </Grid>
             <Grid item md={2} paddingTop={1}>
@@ -185,13 +207,13 @@ export default function MultiplicationPage() {
             Incorrect Answers
           </Typography>
         </Stack>
-        <MathsTableView datasource={multiplications.filter((f) => f.result === false)} operation="+" />
+        <MathsTableView datasource={multiplications.filter((f) => f.result === false)} operation="*" />
         <Stack direction="row" alignItems="center" justifyContent="space-between" mt={5} mb={0}>
           <Typography variant="h4" gutterBottom>
             Correct Answers
           </Typography>
         </Stack>
-        <MathsTableView datasource={multiplications.filter((f) => f.result === true)} operation="+" />
+        <MathsTableView datasource={multiplications.filter((f) => f.result === true)} operation="*" />
 
         {openCompletionDialog ? (
           <Dialog

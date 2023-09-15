@@ -27,6 +27,11 @@ const navConfig = [
     icon: icon('ic_lock'),
   },
   {
+    title: 'Advanced Multiplication',
+    path: '/dashboard/advaced-multiplication?advanced=true',
+    icon: icon('ic_lock'),
+  },
+  {
     title: 'Advanced Additions',
     path: '/dashboard/advanced-additions',
     icon: icon('ic_lock'),

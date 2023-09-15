@@ -1,5 +1,6 @@
 {
-    "totalSigleDigitsSums": 50,
-    "totalDoubleDigitSumn": 50,
-    "totalThreeDigitSums": 50
+    "totalSigleDigitsSums": 25,
+    "totalDoubleDigitSumn": 25,
+    "totalThreeDigitSums": 50,
+    "totalMultiplications": 20
 }
